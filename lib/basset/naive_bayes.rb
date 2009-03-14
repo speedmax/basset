@@ -24,7 +24,7 @@ module Basset
       @number_of_documents += 1
       
       feature_vector.each do |feature|
-        @features[feature.name] ||= FeatureCount.new
+        @features[feature.name] ||= FeatureCount.new(feature.name)
         @features[feature.name].add_count_for_class(feature.value, classification)
       end
     end
@@ -87,8 +87,8 @@ module Basset
     # A class to store feature counts
     class FeatureCount
       
-      def initialize
-        @classes = {}
+      def initialize(feature_name=nil)
+        @feature_name, @classes = feature_name, {}
       end
 
       def add_count_for_class(count, classification)
@@ -102,6 +102,11 @@ module Basset
 
       def count
         @classes.values.sum
+      end
+      
+      def inspect(opts={:verbose=>false})
+        return super if opts[:verbose]
+        @feature_name.to_s + " => " + @classes.inspect
       end
       
     end
