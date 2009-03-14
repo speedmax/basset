@@ -24,7 +24,7 @@ module Basset
     
     #
     # Alias for #vector_of_features
-    def features_vectors
+    def feature_vectors
       vector_of_features
     end
   

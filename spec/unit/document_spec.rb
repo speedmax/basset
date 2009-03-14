@@ -36,19 +36,19 @@ describe URIDocument do
   it "should extract URI token separators &, ?, \\, /, =, [, ], and . separately" do
     expected_features = [:a,:b,:c,:d,:e,:f,:g,:h, :i, '&', '?', "\\", '/', '=', '[', ']', '.']
     expected = single_features(expected_features).sort
-    URIDocument.new('a&b?c\d/e=f[g]h.i').features_vectors.sort.should == expected
+    URIDocument.new('a&b?c\d/e=f[g]h.i').feature_vectors.sort.should == expected
   end
   
   it "should extract two dots as a single feature instead of two dots" do
-    URIDocument.new('..').features_vectors.should == [Feature.new("..", 1)]
+    URIDocument.new('..').feature_vectors.should == [Feature.new("..", 1)]
   end
   
   it "should not stem words" do
-    URIDocument.new("testing").features_vectors.should == [Feature.new("testing", 1)]
+    URIDocument.new("testing").feature_vectors.should == [Feature.new("testing", 1)]
   end
   
   it "should URI decode encoded strings" do
-    URIDocument.new("%23%25").features_vectors.should == [Feature.new("#%", 1)]
+    URIDocument.new("%23%25").feature_vectors.should == [Feature.new("#%", 1)]
   end
   
 end
