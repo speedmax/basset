@@ -67,7 +67,7 @@ module Basset
   class URIDocument < Document
     
     def initialize(uri, classification=nil)
-      @text, @classification = uri, nil
+      @text, @classification = uri, classification
       @tokens = uri_tokens
     end
     
