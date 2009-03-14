@@ -66,6 +66,7 @@ module Basset
       # we drop the first (since there is no 0 feature) and sum on the rest
       # the reason the rescue 0 is in there is tricky
       # because of the removal of redundant unigrams, it's possible that one of the features is never used/initialized
+      puts "@features: " + @features.inspect
       @occurences_of_every_feature_in_class[classification] = @features.rest.compact.inject(0) do |sum, feature_count|
         sum + feature_count.count_for_class(classification)
       end

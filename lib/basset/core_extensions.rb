@@ -7,6 +7,7 @@ require 'stemmer'
 class Array
   # Returns a new array that contains everything except the first element of this one. (just like in lisp)
   def rest
+    return self if empty?
     self.slice(1, size)
   end
   
@@ -44,8 +45,10 @@ class Float
 end
 
 class Symbol
-  def to_proc
-    proc { |obj, *args| obj.send(self, *args) }
+  unless public_method_defined? :to_proc
+    def to_proc
+      Proc.new { |*args| args.shift.__send__(self, *args) }
+    end
   end
 end
 
