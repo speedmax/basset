@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Array, "with Basset extensions" do
   
-  it "should give the tail of an array like FP lists" do
+  it "should give the tail of an array like FP lists do" do
     [1,2,3].rest.should == [2,3]
   end
   
