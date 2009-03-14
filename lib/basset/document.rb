@@ -1,3 +1,5 @@
+require 'uri'
+
 module Basset
 
   # A class for representing a document as a vector of features. It takes the text 
@@ -8,10 +10,11 @@ module Basset
   
     def initialize(text, classification = nil)
       @text, @classification = text, classification
+      @tokens = stemmed_words
     end
   
     def vector_of_features
-      @feature_vector ||= vector_of_features_from_terms_hash( terms_hash_from_words_array( stemmed_words ) )
+      @feature_vector ||= vector_of_features_from_terms_hash( terms_hash_from_words_array( @tokens ) )
     end
   
   private
@@ -20,7 +23,7 @@ module Basset
     # the word appears in the passed in words array
     def terms_hash_from_words_array(words)
       terms = Hash.new(0)
-      stemmed_words.each do |term|
+      words.each do |term|
         terms[term] += 1
       end
       return terms
@@ -45,6 +48,26 @@ module Basset
       text.tr("'@_", '').gsub(/\W/, ' ').gsub(/[0-9]/, '')
 #      text.tr( ',?.!;:"#$%^&*()_=+[]{}\|<>/`~', " " ) .tr( "@'\-", "")
     end
-
+    
+    alias_method :features_vectors, :vector_of_features
   end
+  
+  class URIDocument < Document
+    
+    def initialize(uri, classification=nil)
+      @text, @classification = uri, nil
+      @tokens = uri_tokens
+    end
+    
+    def vector_of_features
+      @feature_vector ||= vector_of_features_from_terms_hash(terms_hash_from_words_array(@tokens))
+    end
+    
+    def uri_tokens
+      URI.decode(@text).gsub(/(&|\?|\\|\/|\=|\[|\])/, ' ').split
+    end
+    
+    alias_method :features_vectors, :vector_of_features
+  end
+  
 end
