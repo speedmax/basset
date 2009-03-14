@@ -1,4 +1,6 @@
-Dir[File.join(File.dirname(__FILE__), "basset", "*.rb")].each do |file|
+$:.unshift(File.dirname(__FILE__))
+
+Dir.glob(File.join(File.dirname(__FILE__), "basset", "*.rb")).each do |file|
   require file
 end
 
