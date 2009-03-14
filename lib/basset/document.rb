@@ -7,14 +7,25 @@ module Basset
   # just a basic bag of words approach.
   class Document
     attr_reader :text, :classification
-  
+    
+    # 
+    # initialize the object with document text.  Set an explicit classification
+    # to use the document as training data
     def initialize(text, classification = nil)
       @text, @classification = text, classification
       @tokens = stemmed_words
     end
-  
+    
+    #
+    # returns an array of feature (token) vectors, which are instances Feature
     def vector_of_features
       @feature_vector ||= vector_of_features_from_terms_hash( terms_hash_from_words_array( @tokens ) )
+    end
+    
+    #
+    # Alias for #vector_of_features
+    def features_vectors
+      vector_of_features
     end
   
   private
@@ -49,9 +60,10 @@ module Basset
 #      text.tr( ',?.!;:"#$%^&*()_=+[]{}\|<>/`~', " " ) .tr( "@'\-", "")
     end
     
-    alias_method :features_vectors, :vector_of_features
   end
   
+  #
+  # Subclass of Document intended to be used to classify URIs
   class URIDocument < Document
     
     def initialize(uri, classification=nil)
@@ -67,7 +79,6 @@ module Basset
       URI.decode(@text).gsub(/(&|\?|\\|\/|\=|\[|\])/, ' ').split
     end
     
-    alias_method :features_vectors, :vector_of_features
   end
   
 end
