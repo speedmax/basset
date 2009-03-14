@@ -30,12 +30,17 @@ end
 describe URIDocument do
   
   def single_features(*uris)
-    uris.map { |uri| Feature.new(uri.to_s, 1) }
+    uris.flatten.map { |uri| Feature.new(uri.to_s, 1) }
   end
   
-  it "should remove URI token separators &, ?, \\, /, =, [, and ]" do
-    expected = single_features(:a,:b,:c,:d,:e,:f,:g,:h).sort
-    URIDocument.new('a&b?c\d/e=f[g]h').features_vectors.sort.should == expected
+  it "should extract URI token separators &, ?, \\, /, =, [, ], and . separately" do
+    expected_features = [:a,:b,:c,:d,:e,:f,:g,:h, :i, '&', '?', "\\", '/', '=', '[', ']', '.']
+    expected = single_features(expected_features).sort
+    URIDocument.new('a&b?c\d/e=f[g]h.i').features_vectors.sort.should == expected
+  end
+  
+  it "should extract two dots as a single feature instead of two dots" do
+    URIDocument.new('..').features_vectors.should == [Feature.new("..", 1)]
   end
   
   it "should not stem words" do
