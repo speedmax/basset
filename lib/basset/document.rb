@@ -7,8 +7,7 @@ module Basset
     attr_reader :text, :classification
   
     def initialize(text, classification = nil)
-      @text           = text
-      @classification = classification
+      @text, @classification = text, classification
     end
   
     def vector_of_features
@@ -34,7 +33,7 @@ module Basset
     end
   
     def stemmed_words
-      words.collect(&:stem)
+      words.map { |w| w.stem.downcase }
     end
   
     def words

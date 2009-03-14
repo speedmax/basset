@@ -29,32 +29,32 @@ describe FeatureSelector do
     feature_selector = FeatureSelector.new
     feature_selector.add_document(doc([Feature.new("viagra", 1)], :spam))
     feature_selector.add_document(doc([Feature.new("puppy", 1)], :ham))
-    feature_selector.docs_with_feature_and_class("viagra", :spam).should == 1
-    feature_selector.docs_with_feature_and_class("viagra", :ham).should == 0
+    feature_selector.__send__(:docs_with_feature_and_class, "viagra", :spam).should == 1
+    feature_selector.__send__(:docs_with_feature_and_class, "viagra", :ham).should == 0
   end
 
   it "should count docs with feature and not class" do
     feature_selector = FeatureSelector.new
     feature_selector.add_document(doc([Feature.new("viagra", 1)], :spam))
     feature_selector.add_document(doc([Feature.new("puppy", 1)], :ham))
-    feature_selector.docs_with_feature_and_not_class("puppy", :spam).should == 1
-    feature_selector.docs_with_feature_and_not_class("puppy", :ham).should == 0
+    feature_selector.__send__(:docs_with_feature_and_not_class, "puppy", :spam).should == 1
+    feature_selector.__send__(:docs_with_feature_and_not_class,"puppy", :ham).should == 0
   end
 
   it "should count docs with class and not feature" do
     feature_selector = FeatureSelector.new
     feature_selector.add_document(doc([Feature.new("viagra", 1)], :spam))
     feature_selector.add_document(doc([Feature.new("puppy", 1)], :ham))
-    feature_selector.docs_with_class_and_not_feature(:spam, "puppy").should == 1
-    feature_selector.docs_with_class_and_not_feature(:spam, "viagra").should == 0
+    feature_selector.__send__(:docs_with_class_and_not_feature, :spam, "puppy").should == 1
+    feature_selector.__send__(:docs_with_class_and_not_feature, :spam, "viagra").should == 0
   end
 
   it "should count docs without feature or class" do
     feature_selector = FeatureSelector.new
     feature_selector.add_document(doc([Feature.new("viagra", 1)], :spam))
     feature_selector.add_document(doc([Feature.new("puppy", 1)], :ham))
-    feature_selector.docs_without_feature_or_class("viagra", :spam).should == 1
-    feature_selector.docs_without_feature_or_class("viagra", :ham).should == 0
+    feature_selector.__send__(:docs_without_feature_or_class, "viagra", :spam).should == 1
+    feature_selector.__send__(:docs_without_feature_or_class, "viagra", :ham).should == 0
   end
 
   it "should return zero chi if all docs contain feature" do
