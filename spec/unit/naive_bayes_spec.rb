@@ -63,10 +63,14 @@ describe NaiveBayes do
     @nbayes.occurrences_of_all_features_in_class(:interesting).should == 5
   end
   
+  def sorted_array_of(items)
+    items.map { |item| item.to_s }.sort
+  end
+  
   it "should give a list of classes it knows about" do
     @nbayes.add_document(:interesting, @feature_vectors)
     @nbayes.add_document(:kinda_interesting, @feature_vectors)
-    @nbayes.classes.should == [:kinda_interesting, :interesting]
+    sorted_array_of(@nbayes.classes).should == sorted_array_of([:kinda_interesting, :interesting])
   end
   
   it "should compute the probability that a given (singular) feature vector belongs to a given class" do
