@@ -14,7 +14,7 @@ module Basset
       @total_docs = 0
       @total_docs_in_class = Hash.new(0)
       @feature_counts = {}
-      @occurences_of_every_feature_in_class = {}
+      @occurrences_of_all_features_in_class = {}
     end
   
     # takes a classification which can be a string and
@@ -83,17 +83,16 @@ module Basset
       Math.log10(decimal_probability)
     end
     
-    # The number of times every feature occurs for a given class.
+    # The sum total of times all features occurs for a given class.
     def occurrences_of_all_features_in_class(classification)
       # return the cached value, if there is one
-      #return @occurences_of_every_feature_in_class[classification] if @occurences_of_every_feature_in_class[classification]
+      return @occurrences_of_all_features_in_class[classification] if @occurrences_of_all_features_in_class[classification]
 
       @feature_counts.each_value do |feature_count|
-        @occurences_of_every_feature_in_class[classification] ||= 0
-        @occurences_of_every_feature_in_class[classification] += feature_count.count_for_class(classification)
+        @occurrences_of_all_features_in_class[classification] ||= 0
+        @occurrences_of_all_features_in_class[classification] += feature_count.count_for_class(classification)
       end
-
-      @occurences_of_every_feature_in_class[classification]
+      @occurrences_of_all_features_in_class[classification]
     end
 
   private
@@ -101,7 +100,7 @@ module Basset
     # probabilities are cached when the classification is run. This method resets
     # the cached probabities.
     def reset_cached_probabilities
-      @occurences_of_every_feature_in_class.clear
+      @occurrences_of_all_features_in_class.clear
     end
 
     # returns the probability of a given class
@@ -124,7 +123,8 @@ module Basset
       end
 
       def count_for_class(classification)
-        @classes[classification] || 1
+        #@classes[classification] || 1 um, what?
+        @classes[classification] || 0
       end
 
       def count
@@ -137,7 +137,7 @@ module Basset
       
       def inspect(opts={:verbose=>false})
         return super if opts[:verbose]
-        " ``" + @name.to_s + "''" + " --> " + @classes.inspect
+        "#<FeatureCount for ``" + @name.to_s + "''" + " --> " + @classes.inspect + " > "
       end
       
     end

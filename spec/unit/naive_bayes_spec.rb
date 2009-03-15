@@ -6,6 +6,14 @@ describe NaiveBayes::FeatureCount do
     NaiveBayes::FeatureCount.new("rspec", :sweet, 1).should == NaiveBayes::FeatureCount.new("rspec", :sweet, 1)
   end
   
+  it "should give the sum of all occurrences of a feature for a given class" do
+    fc = NaiveBayes::FeatureCount.new("rspec", :sweet, 1)
+    fc.add_count_for_class(2, :sweet)
+    fc.add_count_for_class(6, :super_sweet)
+    fc.count_for_class(:sweet).should == 3
+    fc.count_for_class(:super_sweet).should == 6
+  end
+  
 end
 
 describe NaiveBayes do
@@ -50,7 +58,9 @@ describe NaiveBayes do
   
   it "should sum the number of all occurances of all features for a given class" do
     @nbayes.add_document(:interesting, @feature_vectors)
-    @nbayes.occurrences_of_all_features_in_class(:intersting).should == 5
+    @nbayes.occurrences_of_all_features_in_class(:interesting).should == 5
+    add_boring_docs
+    @nbayes.occurrences_of_all_features_in_class(:interesting).should == 5
   end
   
   it "should give a list of classes it knows about" do
@@ -70,14 +80,14 @@ describe NaiveBayes do
     add_interesting_docs
     probability = @nbayes.probability_of_vectors_for_class(@test_vectors, :interesting)
     probability.should be_a(Float)
-    probability.round.should == -7
+    probability.round.should == -5
   end
   
   it "should compute a probability of a class for a set of vectors normalized by the number of features" do
     add_interesting_docs
     probability = @nbayes.probability_of_vectors_for_class(@test_vectors, :interesting, :normalize => true)
     probability.should be_a Float
-    probability.round.should == -2
+    probability.round.should == -1
   end
   
   it "should determine the most likely class of a set feature vectors" do
@@ -87,7 +97,7 @@ describe NaiveBayes do
     classification = @nbayes.classify(test_vectors, :normalize_classes => false)
     classification.last.should == :interesting
     classification.first.should be_a Float
-    classification.first.round.should == -4
+    classification.first.round.should == -2
   end
   
   it "should account for the relative probabilities of classes by default when classifying" do
@@ -97,7 +107,7 @@ describe NaiveBayes do
     classification = @nbayes.classify(vectors)
     classification.last.should == :interesting
     classification.first.should be_a Float
-    classification.first.round.should == -4
+    classification.first.round.should == -2
   end
   
 end
