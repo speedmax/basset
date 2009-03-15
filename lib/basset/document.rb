@@ -76,7 +76,7 @@ module Basset
     end
     
     def uri_tokens
-      URI.decode(@text).gsub(/(\&|\?|\\|\/|\=|\[|\]|\.\.|\.)/) { |char| " " + char + " " }.split
+      URI.decode(@text).gsub(/(\&|\?|\\\\|\\|\/\/|\/|\=|\[|\]|\.\.|\.)/) { |char| " " + char + " " }.split
     end
     
   end

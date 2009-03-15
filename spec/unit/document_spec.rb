@@ -43,6 +43,11 @@ describe URIDocument do
     URIDocument.new('..').feature_vectors.should == [Feature.new("..", 1)]
   end
   
+  it "should extract two slashes as a single feature" do
+    URIDocument.new('//').feature_vectors.should == [Feature.new('//', 1)]
+    URIDocument.new("\\\\").feature_vectors.should == [Feature.new('\\\\', 1)]
+  end
+  
   it "should not stem words" do
     URIDocument.new("testing").feature_vectors.should == [Feature.new("testing", 1)]
   end
