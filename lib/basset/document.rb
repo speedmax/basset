@@ -64,7 +64,7 @@ module Basset
   
   #
   # Subclass of Document intended to be used to classify URIs
-  class URIDocument < Document
+  class UriDocument < Document
     
     def initialize(uri, classification=nil)
       @text, @classification = uri, classification

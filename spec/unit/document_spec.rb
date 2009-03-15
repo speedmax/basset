@@ -27,7 +27,7 @@ describe Document do
   end
 end
 
-describe URIDocument do
+describe UriDocument do
   
   def single_features(*uris)
     uris.flatten.map { |uri| Feature.new(uri.to_s, 1) }
@@ -36,24 +36,24 @@ describe URIDocument do
   it "should extract URI token separators &, ?, \\, /, =, [, ], and . separately" do
     expected_features = [:a,:b,:c,:d,:e,:f,:g,:h, :i, '&', '?', "\\", '/', '=', '[', ']', '.']
     expected = single_features(expected_features).sort
-    URIDocument.new('a&b?c\d/e=f[g]h.i').feature_vectors.sort.should == expected
+    UriDocument.new('a&b?c\d/e=f[g]h.i').feature_vectors.sort.should == expected
   end
   
   it "should extract two dots as a single feature instead of two dots" do
-    URIDocument.new('..').feature_vectors.should == [Feature.new("..", 1)]
+    UriDocument.new('..').feature_vectors.should == [Feature.new("..", 1)]
   end
   
   it "should extract two slashes as a single feature" do
-    URIDocument.new('//').feature_vectors.should == [Feature.new('//', 1)]
-    URIDocument.new("\\\\").feature_vectors.should == [Feature.new('\\\\', 1)]
+    UriDocument.new('//').feature_vectors.should == [Feature.new('//', 1)]
+    UriDocument.new("\\\\").feature_vectors.should == [Feature.new('\\\\', 1)]
   end
   
   it "should not stem words" do
-    URIDocument.new("testing").feature_vectors.should == [Feature.new("testing", 1)]
+    UriDocument.new("testing").feature_vectors.should == [Feature.new("testing", 1)]
   end
   
   it "should URI decode encoded strings" do
-    URIDocument.new("%23%25").feature_vectors.should == [Feature.new("#%", 1)]
+    UriDocument.new("%23%25").feature_vectors.should == [Feature.new("#%", 1)]
   end
   
 end
