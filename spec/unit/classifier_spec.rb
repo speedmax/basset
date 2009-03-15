@@ -43,4 +43,10 @@ describe Classifier do
     @classifier.classify("guitars").should == :hip
   end
   
+  it "should give document scores for a class" do
+    @classifier.train(:hip, "turntables", "techno music", "DJs with turntables", "techno DJs")
+    @classifier.train(:unhip, "rock music", "guitar bass drums", "guitar rock", "guitar players")
+    @classifier.similarity_score(:hip, "guitars").should be_a Float
+  end
+  
 end

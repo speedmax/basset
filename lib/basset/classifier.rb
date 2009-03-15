@@ -28,7 +28,7 @@ module Basset
     # anything.
     def train(classification, *texts)
       texts.flatten.each do |text| 
-        @engine.add_document(classification, @doctype.new(text, classification).feature_vectors)
+        @engine.add_document(classification, features_of(text, classification))
       end
     end
     
@@ -44,10 +44,18 @@ module Basset
     end
     
     def classify(text)
-      @engine.classify(@doctype.new(text, nil).feature_vectors).last
+      @engine.classify(features_of(text)).last
+    end
+    
+    def similarity_score(classification, text)
+      @engine.probability_of_vectors_for_class(features_of(text), classification, :normalize => true)
     end
     
     private
+    
+    def features_of(text, classification=nil)
+      @doctype.new(text, classification).feature_vectors
+    end
     
     # poor man's version of Rails' String#classify.constantize
     def constanize_opt(option)
