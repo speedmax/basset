@@ -73,6 +73,12 @@ describe NaiveBayes do
     sorted_array_of(@nbayes.classes).should == sorted_array_of([:kinda_interesting, :interesting])
   end
   
+  it "should not divide by zero or nil when determining the probability of a feature vector for a class" do
+    @nbayes.occurrences_of_all_features_in_class(:interesting).should be_nil
+    probability_computation = lambda {@nbayes.probability_of_vector_for_class(@test_vectors.first, :interesting)}
+    probability_computation.should_not raise_error
+  end
+  
   it "should compute the probability that a given (singular) feature vector belongs to a given class" do
     @nbayes.add_document(:interesting, @feature_vectors)
     probablity = @nbayes.probability_of_vector_for_class(@test_vectors.first, :interesting)
