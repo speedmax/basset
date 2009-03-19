@@ -28,7 +28,7 @@ module Basset
     # anything.
     def train(classification, *texts)
       texts.flatten.each do |text| 
-        @engine.add_document(classification, features_of(text, classification))
+        train_with_features(classification, features_of(text, classification))
       end
     end
     
@@ -43,15 +43,34 @@ module Basset
       end
     end
     
+    # 
+    # Classifies _text_ based on training
     def classify(text)
-      @engine.classify(features_of(text)).last
+      classify_features(features_of(text)).last
     end
     
+    #
+    # Gives a numeric value for the similarity of _text_ to previously seen
+    # texts of class _classification_.  For a Naive Bayes filter, this will
+    # be the log10 of the probabilities of each token in _text_ occuring in
+    # a text of class _classification_, normalized for the number of tokens.
     def similarity_score(classification, text)
-      @engine.probability_of_vectors_for_class(features_of(text), classification, :normalize => true)
+      similarity_score_for_features(classification, features_of(text))
     end
     
     private
+    
+    def train_with_features(classification, features)
+      @engine.add_document(classification, features)
+    end
+    
+    def classify_features(features)
+      @engine.classify(features)
+    end
+    
+    def similarity_score_for_features(classification, features)
+      @engine.probability_of_vectors_for_class(features, classification, :normalize => true)      
+    end
     
     def features_of(text, classification=nil)
       @doctype.new(text, classification).feature_vectors
@@ -61,6 +80,101 @@ module Basset
     def constanize_opt(option)
       class_name = option.to_s.split('_').map { |word| word.capitalize }.join('')
       Basset.class_eval class_name
+    end
+    
+  end
+  
+  #
+  # A class for anomaly detection.  
+  #
+  # The purpose of this is to enable a statistical machine learning approach
+  # even when you can't/don't want to assume that "abnormal" documents will
+  # have certain features or fit nicely into classes.
+  # 
+  # An example use case is an anomaly based IDS where you don't want to classify
+  # different kinds of attacks but instead want to find all events that deviate
+  # from an established baseline.
+  # 
+  # With the default NaiveBayes classification method, uses the log10 of the 
+  # Bayesian probability of a document belonging to the normal behavior group 
+  # as a distance measurement; any document with a distance measurement higher
+  # than a given threshold is considered anomalous.
+  class AnomalyDetector < Classifier
+    
+    def initialize(opts={})
+      @training_features=[]
+      @updated = true
+      super(opts)
+    end
+    
+    def classify(text)
+      anomalous?(text) ? :anomalous : :normal
+    end
+    
+    def anomalous?(text)
+      minimum_acceptable_score > similarity_score(text)
+    end
+    
+    def normal?(text)
+      !anomalous?(text)
+    end
+    
+    def train(*texts)
+      texts.flatten.each do |text|
+        features = features_of(text)
+        @training_features << features
+        train_with_features(:normal, features)
+      end
+      reset_memoized_values
+    end
+    
+    def similarity_score(text)
+      super(:normal, text)
+    end
+    
+    # Gives the number of standard deviations from average 
+    def anomaly_score(text)
+      -1 * similarity_score(text) / stddev_of_scores_of_training_set
+    end
+    
+    def scores_for_training_set
+      unless @scores_for_training_set
+        @scores_for_training_set = @training_features.map { |feature_set| similarity_score_for_features(:normal, feature_set)}
+        stddev_of_scores_of_training_set
+      end
+      @scores_for_training_set
+    end
+    
+    def avg_score_of_training_set
+      scores_for_training_set.inject(0) { |sum, score| sum += score } / scores_for_training_set.length.to_f
+    end
+    
+    def score_range_of_training_set
+      scores_for_training_set.min .. scores_for_training_set.max
+    end
+    
+    def stddev_of_scores_of_training_set
+      unless @stddev_of_scores_of_training_set
+        @stddev_of_scores_of_training_set = Math.stddev(scores_for_training_set)
+      end
+      @stddev_of_scores_of_training_set
+    end
+    
+    def minimum_acceptable_score
+      avg_score_of_training_set - (4 * stddev_of_scores_of_training_set)
+    end
+    
+    def train_iterative(text)
+      (1 .. 5).each do
+        train(text)
+        break if normal?(text)
+      end
+    end
+    
+    def reset_memoized_values
+      @memoized_vals_stale = true
+      @stddev_of_scores_of_training_set = nil
+      @scores_for_training_set = nil
     end
     
   end
