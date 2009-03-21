@@ -120,7 +120,6 @@ module Basset
             
     def feature_dictionary_hash
       unless @memoized_feature_dictionary_hash
-        puts "rebuilding bf"
         m = 15 * @feature_dictionary.count  # bloom filter size (bytes)
         @memoized_feature_dictionary_hash = BloomFilter.new(m,3,23)
         
