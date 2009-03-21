@@ -1,5 +1,7 @@
 require File.dirname(__FILE__) + "/../../../libsvm-ruby-swig/lib/svm"
 
+require "bloomfilter" #  igrigorik-bloomfilter (github)
+
 module Basset
   # =Overview
   # A class for SVM document classification.  Follows the same basic interface
@@ -115,10 +117,13 @@ module Basset
       end
       vectorized_doc
     end
-        
+            
     def feature_dictionary_hash
       unless @memoized_feature_dictionary_hash
-        @memoized_feature_dictionary_hash = {}
+        puts "rebuilding bf"
+        m = 15 * @feature_dictionary.count  # bloom filter size (bytes)
+        @memoized_feature_dictionary_hash = BloomFilter.new(m,3,23)
+        
         @feature_dictionary.each_index do |i|
           @memoized_feature_dictionary_hash[@feature_dictionary[i]] = i
         end
