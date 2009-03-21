@@ -71,8 +71,7 @@ module Basset
     end
     
     def classify(feature_vectors)
-      predicted_label = model.predict(vectorize_doc(feature_vectors.map { |fv| fv.name }))
-      class_of_label(predicted_label)
+      class_of_label(model.predict(vectorize_doc(feature_vectors.map { |fv| fv.name })))
     end
     
     def classes
@@ -129,6 +128,7 @@ module Basset
     
     def reset_memoized_vars!
       @memoized_model, @memoized_problem, @memoized_feature_dictionary_hash = nil, nil, nil
+      @memoized_inverted_class_labels = nil
     end
     
     def model
@@ -166,7 +166,10 @@ module Basset
     end
     
     def class_of_label(label)
-      @class_labels.invert[label.to_i]
+      unless @memoized_inverted_class_labels
+        @memoized_inverted_class_labels = @class_labels.invert
+      end
+      @memoized_inverted_class_labels[label.to_i]
     end
     
   end
