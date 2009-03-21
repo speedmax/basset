@@ -71,9 +71,6 @@ module Basset
     end
     
     def classify(feature_vectors)
-      #labels_features = labels_and_document_vectors
-      #prob = Problem.new(labels_features[:labels], labels_features[:features])
-      #model = Model.new(prob, @svm_parameter)
       predicted_label = model.predict(vectorize_doc(feature_vectors.map { |fv| fv.name }))
       class_of_label(predicted_label)
     end
@@ -108,14 +105,30 @@ module Basset
       end
     end
     
-    def vectorize_doc(features)
-      @feature_dictionary.map { |dict_feature| features.include?(dict_feature) ? 1 : 0}
-    end
-    
     private
     
+    def vectorize_doc(features)
+      vectorized_doc = Array.new(@feature_dictionary.size, 0)
+      features.each do |feature|
+        if index = feature_dictionary_hash[feature]
+          vectorized_doc[index] = 1
+        end
+      end
+      vectorized_doc
+    end
+        
+    def feature_dictionary_hash
+      unless @memoized_feature_dictionary_hash
+        @memoized_feature_dictionary_hash = {}
+        @feature_dictionary.each_index do |i|
+          @memoized_feature_dictionary_hash[@feature_dictionary[i]] = i
+        end
+      end
+      @memoized_feature_dictionary_hash
+    end
+    
     def reset_memoized_vars!
-      @memoized_model, @memoized_problem = nil, nil
+      @memoized_model, @memoized_problem, @memoized_feature_dictionary_hash = nil, nil, nil
     end
     
     def model
