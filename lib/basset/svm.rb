@@ -43,6 +43,7 @@ module Basset
       @feature_dictionary += feature_vectors.map { |fv| fv.name }
       @feature_dictionary.uniq!
       @documents_for_class[classification] << feature_vectors.map { |fv| fv.name }
+      reset_memoized_vars!
     end
     
     # Gives the vector representation of the training documents of class
@@ -70,9 +71,9 @@ module Basset
     end
     
     def classify(feature_vectors)
-      labels_features = labels_and_document_vectors
-      prob = Problem.new(labels_features[:labels], labels_features[:features])
-      model = Model.new(prob, @svm_parameter)
+      #labels_features = labels_and_document_vectors
+      #prob = Problem.new(labels_features[:labels], labels_features[:features])
+      #model = Model.new(prob, @svm_parameter)
       predicted_label = model.predict(vectorize_doc(feature_vectors.map { |fv| fv.name }))
       class_of_label(predicted_label)
     end
@@ -107,14 +108,30 @@ module Basset
       end
     end
     
+    def vectorize_doc(features)
+      @feature_dictionary.map { |dict_feature| features.include?(dict_feature) ? 1 : 0}
+    end
+    
     private
+    
+    def reset_memoized_vars!
+      @memoized_model, @memoized_problem = nil, nil
+    end
+    
+    def model
+      @memoized_model ||= Model.new(problem, @svm_parameter)
+    end
+    
+    def problem
+      unless @memoized_problem 
+        labels_features = labels_and_document_vectors
+        @memoized_problem = Problem.new(labels_features[:labels], labels_features[:features])
+      end
+      @memoized_problem
+    end
     
     def new_class?(classification)
       !@class_labels.keys.include?(classification)
-    end
-    
-    def vectorize_doc(features)
-      @feature_dictionary.map { |dict_feature| features.include?(dict_feature) ? 1 : 0}
     end
     
     def default_svm_parameter
@@ -124,6 +141,7 @@ module Basset
       param.degree = 1
       param.coef0 = 0
       param.eps= 0.001
+      param.nu = 0.5          #?! this blows up on my dataset...
       param.kernel_type = RBF
       param
     end

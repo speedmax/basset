@@ -4,6 +4,7 @@ describe FeatureExtractor do
   DocumentMock = Struct.new(:vector_of_features)
 
   it "should save to file"
+  
   it "should be loadable from file"
   
   it "should return number of features" do
