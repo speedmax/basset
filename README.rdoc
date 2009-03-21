@@ -15,19 +15,21 @@ To build a classifier, you'll first need a set of training documents. For a spam
 
 ==Simple Example
 The Classifier class takes care of all of the messy details for you.  It defaults to a naive bayes classifier and using the Document (best for western natural language) class to represent documents.
-	
+
 	# This example based on the song "Losing My Edge" by LCD Soundsystem
-	
+
 	classifier = Basset::Classifier.new 	#default options
-	
+
 	classifier.train(:hip, "turntables", "techno music", "DJs with turntables", "techno DJs")
 	classifier.train(:unhip, "rock music", "guitar bass drums", "guitar rock", "guitar players")
-	classifier.classify("guitar music").should == :unhip
-	
+	classifier.classify("guitar music") 
+		=> :unhip
+
 	# now everyone likes rock music again! retrain the classifier fast!
-	
+
 	classifier.train_iterative(:hip, "guitars") # takes 3 iterations
-	classifier.classify("guitars").should == :hip
+	classifier.classify("guitars")
+		=> :hip
 
 ==Full Control
 For more control over the various stages of the training and classification process, you can create document, feature selector, feature extractor, and document classifier objects directly.  The process is as follows:
