@@ -6,21 +6,42 @@ This is my fork of Paul Dix's basset[http://github.com/pauldix/basset/] which is
 Basset includes a generic document representation class, a feature selector, a feature extractor, a naive bayes classifier, and a classification evaluator for running tests. The goal was to create a general framework that would be easy to modify for specific problems. I also tried to design the system to be extensible so I could add more classification and clustering algorithms as I get deeper into my studies on machine learning.
 
 ==Additions
-I have added lots of tests (TATFT!), a document class for URIs, a high level classifier class, SVM support using libsvm-ruby-swig[http://github.com/tomz/libsvm-ruby-swig] and an anomaly detector (one-class classifier).  I have also modified the naive bayes classifier so that it does not require you to use the feature selector and extractor.  This should help you to get encouraging results when you first start.  Once you have a large training dataset, you can use the feature selector and extractor for better performance.
+I have added lots of tests (TATFT![http://smartic.us/2008/8/15/tatft-i-feel-a-revolution-coming-on]), a document class for URIs, a high level classifier class, SVM support using libsvm-ruby-swig[http://github.com/tomz/libsvm-ruby-swig] and an anomaly detector (one-class classifier).  I have also modified the naive bayes classifier so that it does not require you to use the feature selector and extractor.  This should help you to get encouraging results when you first start.  Once you have a large training dataset, you can use the feature selector and extractor for better performance.
 
-=What You Could Use This For
-Just in case you don't have a clue what machine learning or classification is, here's a quick example scenario and an explanation of the process. The most popular task is spam identification. To do this you'll first need a set of training documents. This would consist of a number of documents which you have labeled as either spam or not. With training sets, bigger is better. You should probably have at least 100 of each type (spam and not spam). Really 1,000 of each type would be better and 10,000 of each would be super sweet. Once you have the training set the process with this library flows like this:
+=Usage
+The most popular task is spam identification, though there are many others, such as document retrieval, security/intrusion detection, and applications in Biology and Astrophysics. 
+
+To build a classifier, you'll first need a set of training documents. For a spam/non-spam classifier, this would consist of a number of documents which you have labeled as either spam or not. With training sets, bigger is better. You should probably have at least 100 of each type (spam and not spam). Really 1,000 of each type would be better and 10,000 of each would be super sweet.
+
+==Simple Example
+The Classifier class takes care of all of the messy details for you.  It defaults to a naive bayes classifier and using the Document (best for western natural language) class to represent documents.
+		
+		# This example based on the song "Losing My Edge" by LCD Soundsystem
+		
+		classifier = Basset::Classifier.new 	#default options
+		
+		classifier.train(:hip, "turntables", "techno music", "DJs with turntables", "techno DJs")
+		classifier.train(:unhip, "rock music", "guitar bass drums", "guitar rock", "guitar players")
+		classifier.classify("guitar music").should == :unhip
+		
+		# now everyone likes rock music again! retrain the classifier fast!
+		
+		classifier.train_iterative(:hip, "guitars") # takes 3 iterations
+		classifier.classify("guitars").should == :hip
+
+==Full Control
+For more control over the various stages of the training and classification process, you can create document, feature selector, feature extractor, and document classifier objects directly.  The process is as follows:
 
 * Create each as a Document (a class in this library)
 * Pass those documents into the FeatureSelector
 * Get the best features and pass those into the FeatureExtractor
 * Now extract features from each document using the extractor and
-* Pass those extracted features to NaiveBayes as part of the training set
-* Now you can save the FeatureExtractor and NaiveBayes to a file
+* Pass those extracted features to NaiveBayes or Svm as part of the training set
+* Now you can save the FeatureExtractor and NaiveBayes (or Svm) to a file
 
 That represents the process of selecting features and training the classifier. Once you've done that you can predict if a new previously unseen document is spam or not by just doing the following:
 
-* Load the feature extractor and naive bayes from their files
+* Load the feature extractor and document classifier from their files
 * Create a new document object from your new unseen document
 * Extract the features from that document using the feature extractor and
 * Pass those to the classify method of the naive bayes classifier
