@@ -54,8 +54,18 @@ end
 
 describe AnomalyDetector do
   
+  YAML_FILE_BASENAME = "/tmp/basset_anomaly_detector_rspec_savefile"
+  
+  def tmp_file
+    YAML_FILE_BASENAME + rand(2 ** 32).to_s(16)
+  end
+  
   before(:each) do
     @detector = AnomalyDetector.new
+  end
+  
+  after(:each) do
+    #Dir.glob(YAML_FILE_BASENAME + '*').each  {|file| File.delete_file}
   end
   
   def train_detector_on_code_love
@@ -136,6 +146,21 @@ describe AnomalyDetector do
     @detector.scores_for_training_set.should_not be_nil
     train_detector_on_code_love
     @detector.instance_variable_get(:@scores_for_training_set).should be_nil
+  end
+  
+  it "should serialize itself to YAML" do
+    train_detector_on_code_love
+    file = tmp_file
+    @detector.save_to_file(file)
+    File.exist?(file).should be_true
+  end
+  
+  it "should load itself from YAML" do
+    train_detector_on_code_love
+    file = tmp_file
+    @detector.save_to_file(file)
+    reloaded_detector = AnomalyDetector.load_from_file(file)
+    reloaded_detector.should == @detector
   end
     
 end

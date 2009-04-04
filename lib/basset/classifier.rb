@@ -8,6 +8,8 @@ module Basset
   # NaiveBayes into one convenient interface.
   #
   class Classifier
+    include YamlSerialization
+    
     DEFAULTS = {:type => "naive_bayes", :doctype => "document"}
     
     attr_reader :engine, :doctype
@@ -15,9 +17,9 @@ module Basset
     #
     # Create a new classifier object.  You can specify the type of classifier
     # and kind of documents with the options.  The defaults are 
-    # :type => :naive_bayes, :doctype => :document; There is also a uri_document
+    # :type => :naive_bayes, :doctype => :document; There is also a uri_document,ie.
+    # opts: {:type => :naive_bayes, :doctype => :uri_document }
     def initialize(opts={})
-      # opts: {:type => :naive_bayes, :doctype => :uri_document }
       @engine = constanize_opt(opts[:type] || DEFAULTS[:type]).new
       @doctype = constanize_opt(opts[:doctype] || DEFAULTS[:doctype])
     end
@@ -56,6 +58,10 @@ module Basset
     # a text of class _classification_, normalized for the number of tokens.
     def similarity_score(classification, text)
       similarity_score_for_features(classification, features_of(text))
+    end
+    
+    def ==(other)
+      other.is_a?(self.class) && other.engine == engine && other.doctype == doctype
     end
     
     private
@@ -100,6 +106,7 @@ module Basset
   # as a distance measurement; any document with a distance measurement higher
   # than a given threshold is considered anomalous.
   class AnomalyDetector < Classifier
+    include YamlSerialization
     
     def initialize(opts={})
       @training_features=[]

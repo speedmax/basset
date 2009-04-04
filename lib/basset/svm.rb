@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../../../libsvm-ruby-swig/lib/svm"
+require "svm" #File.dirname(__FILE__) + "/../../../libsvm-ruby-swig/lib/svm"
 
 require "bloomfilter" #  igrigorik-bloomfilter (github)
 

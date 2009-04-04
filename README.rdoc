@@ -1,9 +1,9 @@
 Author::    Paul Dix  (mailto:paul@pauldix.net)
 
 =Summary
-This is my fork of Paul Dix's basset[http://github.com/pauldix/basset/] which is a library for machine learning.
+This is Daniel DeLeo's fork of Paul Dix's basset[http://github.com/pauldix/basset/], a library for machine learning.
 
-Basset includes a generic document representation class, a feature selector, a feature extractor, a naive bayes classifier, and a classification evaluator for running tests. The goal was to create a general framework that would be easy to modify for specific problems. I also tried to design the system to be extensible so I could add more classification and clustering algorithms as I get deeper into my studies on machine learning.
+Basset includes a generic document representation class, a feature selector, a feature extractor, naive bayes  and SVM classifiers, and a classification evaluator for running tests. The goal is to create a general framework that is easy to modify for specific problems. It is designed to be extensible so it should be easy to add more classification and clustering algorithms.
 
 ==Additions
 I have added lots of tests (TATFT![http://smartic.us/2008/8/15/tatft-i-feel-a-revolution-coming-on]), a document class for URIs, a high level classifier class, SVM support using libsvm-ruby-swig[http://github.com/tomz/libsvm-ruby-swig] and an anomaly detector (one-class classifier).  I have also modified the naive bayes classifier so that it does not require you to use the feature selector and extractor.  This should help you to get encouraging results when you first start.  Once you have a large training dataset, you can use the feature selector and extractor for better performance.

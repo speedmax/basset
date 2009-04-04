@@ -94,6 +94,11 @@ module Basset
       end
       @occurrences_of_all_features_in_class[classification]
     end
+    
+    def ==(other)
+      other.is_a?(self.class) && other.total_docs == total_docs && 
+      other.total_docs_in_class == total_docs_in_class && other.feature_counts == feature_counts
+    end
 
   private
   
