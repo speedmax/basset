@@ -65,7 +65,7 @@ describe AnomalyDetector do
   end
   
   after(:each) do
-    #Dir.glob(YAML_FILE_BASENAME + '*').each  {|file| File.delete_file}
+    Dir.glob(YAML_FILE_BASENAME + '*').each  {|file| File.delete file}
   end
   
   def train_detector_on_code_love
