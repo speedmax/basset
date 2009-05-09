@@ -36,7 +36,7 @@ gemspec = Gem::Specification.new do |p|
   p.name = "basset"
   p.version = PKG_VERSION
   p.require_path = 'lib'
-  p.author = ['Paul Dix', 'Bryan Helmkamp', 'Daniel DeLeo']
+  p.authors = ['Paul Dix', 'Bryan Helmkamp', 'Daniel DeLeo']
   p.email = 'paul@pauldix.net'
  
   p.description = 
