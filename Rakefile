@@ -1,15 +1,14 @@
-PKG_VERSION = "1.0.2"
-
 require 'rubygems'
-require "rake"
 require 'rake/rdoctask'
-require 'rake/gempackagetask'
-require 'spec/rake/spectask'
 require './lib/basset.rb'
+require "spec/rake/spectask"
+require "rake/clean"
+require "rake/rdoctask"
 
 desc "Run all of the specs"
 Spec::Rake::SpecTask.new do |t|
   t.spec_opts = ['--options', "\"spec/spec.opts\""]
+  t.fail_on_error = false
 end
 
 namespace :spec do
@@ -30,25 +29,35 @@ namespace :spec do
   
 end
 
-gemspec = Gem::Specification.new do |p|
-  p.platform = Gem::Platform::RUBY
-  p.summary = 'A library for machine learning and classification'
-  p.name = "basset"
-  p.version = PKG_VERSION
-  p.require_path = 'lib'
-  p.authors = ['Paul Dix', 'Bryan Helmkamp', 'Daniel DeLeo']
-  p.email = 'paul@pauldix.net'
- 
-  p.description = 
-%q{
-This is Daniel DeLeo's fork of Paul Dix's basset[http://github.com/pauldix/basset/], a library for machine learning.
 
-Basset includes a generic document representation class, a feature selector, a feature extractor, naive bayes  and SVM classifiers, and a classification evaluator for running tests. The goal is to create a general framework that is easy to modify for specific problems. It is designed to be extensible so it should be easy to add more classification and clustering algorithms.
-}
-  p.dependencies << ['stemmer', '>= 1.0.1'] 
+Rake::RDocTask.new do |rdt|
+  rdt.rdoc_dir = "doc"
+  rdt.main = "README.rdoc"
+  rdt.rdoc_files.include("README.rdoc", "lib/*", "ext/*/*.yy.c")
 end
 
-Rake::GemPackageTask.new(gemspec) do |pkg|
-  pkg.need_zip = true
-  pkg.need_tar = true
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |s|
+    s.name = 'basset'
+    s.summary = 'A library for machine learning and classification'
+    s.description = s.summary
+    s.email = 'ddeleo@basecommander.net'
+    s.homepage = "http://github.com/danielsdeleo/basset"
+    s.platform = Gem::Platform::RUBY 
+    s.has_rdoc = true
+    s.extra_rdoc_files = ["README.rdoc"]
+    s.require_path = ["lib"]
+    s.authors = ['Paul Dix', 'Bryan Helmkamp', 'Daniel DeLeo']
+    s.add_dependency('stemmer', '>= 1.0.1') 
+    # ruby -rpp -e' pp `git ls-files`.split("\n") '
+    s.files = `git ls-files`.split("\n").reject {|f| f =~ /git/}
+  end
+rescue LoadError
+  puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
+end
+
+desc "outputs a list of files suitable for use with the gemspec"
+task :list_files do
+  sh %q{ruby -rpp -e' pp `git ls-files`.split("\n").reject {|f| f =~ /git/} '}
 end
