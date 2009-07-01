@@ -24,15 +24,15 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<stemmer>, [">= 1.0.1"])
       s.add_runtime_dependency(%q<tomz-libsvm-ruby-swig>, [">= 0.3.3"])
-      s.add_runtime_dependency(%q<igrigorik-bloomfilter>, [">= 0.1.2"])
+      s.add_runtime_dependency(%q<rjspotter-bloomfilter>, [">= 0.1.3"])
     else
       s.add_dependency(%q<stemmer>, [">= 1.0.1"])
       s.add_dependency(%q<tomz-libsvm-ruby-swig>, [">= 0.3.3"])
-      s.add_dependency(%q<igrigorik-bloomfilter>, [">= 0.1.2"])
+      s.add_dependency(%q<rjspotter-bloomfilter>, [">= 0.1.3"])
     end
   else
     s.add_dependency(%q<stemmer>, [">= 1.0.1"])
     s.add_dependency(%q<tomz-libsvm-ruby-swig>, [">= 0.3.3"])
-    s.add_dependency(%q<igrigorik-bloomfilter>, [">= 0.1.2"])
+    s.add_dependency(%q<rjspotter-bloomfilter>, [">= 0.1.3"])
   end
 end
